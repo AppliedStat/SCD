@@ -35,6 +35,7 @@ weighted.median <- function(x, w) {
     }
   }
 }
+
 #
 #===================================================================
 # Distance
@@ -108,34 +109,10 @@ ebreakdown = function(n, w) {
   K = ceiling(n/2)
 
   SUM.CG <- SUM.L1 <- SUM.L2 <- numeric(K)
-
-  # Max Breakdown
-  w = sort(w)
-  xx = runif(n, -TINY, TINY )
-  yy = runif(n, -TINY, TINY )
-  for ( i in 1L:K ) {
-      xx[1L:i] = BIG
-      yy[1L:i] = BIG
-      SUM.CG[i] = sum( abs(optimal.location(xx,yy, w=w, norm="Lsq")) )
-      SUM.L1[i] = sum( abs(optimal.location(xx,yy, w=w, norm="L1")) )
-      SUM.L2[i] = sum( abs(optimal.location(xx,yy, w=w, norm="L2")) )
-  }
-  BD.CG = sum(SUM.CG < MID)/n*100
-  BD.L1 = sum(SUM.L1 < MID)/n*100
-  BD.L2 = sum(SUM.L2 < MID)/n*100
-  BREAK = c(BD.CG, BD.L1, BD.L2)
-  OUT1 = cbind(SUM.CG, SUM.L1, SUM.L2)
-  colnames(OUT1) = c("CG", "L1", "L2")
-  rownames(OUT1) = c(1L:K)
-  cat("\n================================================\n")
-  cat(" n =",n, " weights =", w, "\n")
-  prmatrix(OUT1)
-  cat("\n* Max. Breakdown *\n")
-  names(BREAK) = c("CG(%)", "L1(%)", "L2(%)")
-  print( round(BREAK,3) )
+  w0 = sort(w)
 
   # Min Breakdown
-  w = rev(sort(w))
+  w = rev(w0)
   xx = runif(n, -TINY, TINY )
   yy = runif(n, -TINY, TINY )
   for ( i in 1L:K ) {
@@ -160,6 +137,31 @@ ebreakdown = function(n, w) {
   names(BREAK) = c("CG(%)", "L1(%)", "L2(%)")
   print( round(BREAK,3) )
   cat("\n================================================\n")
+
+  # Max Breakdown
+  w = w0
+  xx = runif(n, -TINY, TINY )
+  yy = runif(n, -TINY, TINY )
+  for ( i in 1L:K ) {
+      xx[1L:i] = BIG
+      yy[1L:i] = BIG
+      SUM.CG[i] = sum( abs(optimal.location(xx,yy, w=w, norm="Lsq")) )
+      SUM.L1[i] = sum( abs(optimal.location(xx,yy, w=w, norm="L1")) )
+      SUM.L2[i] = sum( abs(optimal.location(xx,yy, w=w, norm="L2")) )
+  }
+  BD.CG = sum(SUM.CG < MID)/n*100
+  BD.L1 = sum(SUM.L1 < MID)/n*100
+  BD.L2 = sum(SUM.L2 < MID)/n*100
+  BREAK = c(BD.CG, BD.L1, BD.L2)
+  OUT1 = cbind(SUM.CG, SUM.L1, SUM.L2)
+  colnames(OUT1) = c("CG", "L1", "L2")
+  rownames(OUT1) = c(1L:K)
+  cat("\n================================================\n")
+  cat(" n =",n, " weights =", w, "\n")
+  prmatrix(OUT1)
+  cat("\n* Max. Breakdown *\n")
+  names(BREAK) = c("CG(%)", "L1(%)", "L2(%)")
+  print( round(BREAK,3) )
 }
 ##################################
 
