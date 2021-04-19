@@ -7,7 +7,7 @@
 #  tiny=.Machine$double.eps; abs(a-b)<tiny  # good idea, but does not wrok
 #  tiny = sqrt(.Machine$double.eps); abs(a-b)<tiny # It works!
 #--------------
-weighted.median <- function(x, w) { 
+weighted.median <- function(x, w, interpolation=0.5) { 
   # Preparation
   if (missing(w)) w = rep(1L,length(x))
   if (length(w) != length(x)) stop("'x' and 'w' must have the same length")
@@ -34,7 +34,7 @@ weighted.median <- function(x, w) {
     if (w[k+1] < tiny) {   # check if w[k+1] == 0 
         return( x[k+1] )
     } else {
-      return( 0.5*(x[k]+x[k+1]) )
+      return( (1-interpolation)*x[k] + interpolation*x[k+1] )
     }
   }
 }
